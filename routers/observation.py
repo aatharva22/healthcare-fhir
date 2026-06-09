@@ -24,8 +24,11 @@ def get_observation(observation_id:str, db: Session = Depends(get_db)):
     return requested_observation
 
 @router.get("", response_model = List[ObservationResponse], status_code = 200)
-def get_all_observations(skip:int = 0, limit:int = 100, db : Session = Depends(get_db)):
-    return db.query(Observation).order_by(Observation.id).offset(skip).limit(limit).all()
+def get_all_observations(patient_id:str | None = None,skip:int = 0, limit:int = 100, db : Session = Depends(get_db)):
+    query = db.query(Observation)
+    if patient_id:
+        query = query.filter(Observation.patient_id == patient_id)
+    return query.order_by(Observation.id).offset(skip).limit(limit).all()
 
 @router.put("/{observation_id}", response_model = ObservationResponse, status_code = 200)
 def update_observation(observation_id:str, observation:ObservationCreate, db:Session = Depends(get_db)):

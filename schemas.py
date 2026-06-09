@@ -42,3 +42,50 @@ class ObservationResponse(BaseModel):
 
     class Config:
         from_attributes = True
+
+
+
+class MedicationRequest_Create(BaseModel):
+    
+    patient_id:str
+    medication_name:str
+    dosage:str
+    frequency:str
+    status:str = "active"
+    prescribed_date:datetime
+    notes:str
+
+class MedicationRequest_Response(BaseModel):
+    id:str
+    patient_id:str
+    medication_name:str
+    dosage:str
+    frequency:str
+    status:str = "active"
+    prescribed_date:datetime
+    notes:str
+
+    class Config:
+        from_attribute = True
+
+
+class Condition_Create(BaseModel):
+    
+    patient_id:str
+    code:str
+    description:str
+    clinical_status:str = "active"
+    onset_date:datetime
+    notes:str
+
+class Condition_Create_Response(BaseModel):
+    id:str
+    patient_id:str
+    code:str
+    description:str
+    clinical_status:str = "active"
+    onset_date:datetime
+    notes:str
+
+    class Config:
+        from_attribute = True

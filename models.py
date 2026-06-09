@@ -20,3 +20,27 @@ class Observation(Base):
     unit = Column(String)
     effective_date = Column(DateTime )
     status = Column(String, default = "final", nullable = False)
+
+class MedicationRequest(Base):
+    __tablename__ = "medicationrequests"
+    id = Column(String, primary_key = True, default = lambda:str(uuid.uuid4()),nullable = False)
+    patient_id = Column(String, ForeignKey("patients.id"),nullable = False)
+    medication_name = Column(String, nullable = False)
+    dosage = Column(String, nullable = False)
+    frequency = Column(String, nullable = False)
+    status = Column(String, nullable = False, default = "active")
+    prescribed_date = Column(DateTime)
+    notes = Column(String)
+
+class Condition(Base):
+    __tablename__ = "conditions"
+    id = Column(String, primary_key = True, default = lambda:str(uuid.uuid4()),nullable = False)
+    patient_id = Column(String, ForeignKey("patients.id"),nullable = False)
+    code = Column(String, nullable = False)
+    description = Column(String, nullable = False)
+    clinical_status = Column(String, nullable = False, default = "active")
+    onset_date = Column(DateTime)
+    notes = Column(String)
+
+
+    
