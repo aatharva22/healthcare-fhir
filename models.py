@@ -1,6 +1,5 @@
 import uuid
-
-from sqlalchemy import Column, String, Boolean, Date
+from sqlalchemy import Column, String, Boolean, Date, DateTime, ForeignKey
 from database import Base
 
 class Patient(Base):
@@ -12,3 +11,12 @@ class Patient(Base):
     birth_date = Column(Date)
     active = Column(Boolean, nullable = False, default = True)
 
+class Observation(Base):
+    __tablename__ = "observations"
+    id = Column(String, primary_key = True, default = lambda:str(uuid.uuid4()),nullable = False)
+    patient_id = Column(String, ForeignKey("patients.id"),nullable = False)   
+    code = Column(String, nullable = False )
+    value = Column(String, nullable = False )
+    unit = Column(String)
+    effective_date = Column(DateTime )
+    status = Column(String, default = "final", nullable = False)
