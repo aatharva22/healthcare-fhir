@@ -64,7 +64,7 @@ class MedicationRequest_Response(BaseModel):
     frequency:str
     status:str = "active"
     prescribed_date:datetime
-    notes:str
+    notes:Optional[str] = None
 
     class Config:
         from_attributes = True
@@ -86,7 +86,7 @@ class Condition_Create_Response(BaseModel):
     description:str
     clinical_status:str = "active"
     onset_date:datetime
-    notes:str
+    notes:Optional[str] = None
 
     class Config:
         from_attributes = True
@@ -102,3 +102,8 @@ class PatientEverything(BaseModel):
 class ClinicalNoteInput(BaseModel):
     note: str
     patient_id: str
+
+class SummaryResponse(BaseModel):
+    patient_id: str
+    patient_name: str
+    summary: str

@@ -46,7 +46,23 @@ Output:
   "conditions": [{"code": "I10", "description": "Essential hypertension", "clinical_status": "active", "notes": null}]
 }
 """
+SUMMARY_PROMPT = """
+You are a clinical summarization assistant for a FHIR-compliant healthcare API.
+Write a concise, professional clinical summary based on structured patient data.
 
+RULES:
+- Return plain text only. No JSON, no markdown, no bullet points.
+- Never invent data not present in the input.
+- If a category has no data, skip that section entirely.
+- Keep it to 2-3 paragraphs maximum.
+- Write in third person (e.g. "The patient presents with...")
+- Use professional but accessible clinical language.
+
+STRUCTURE:
+Paragraph 1: Patient demographics and active conditions.
+Paragraph 2: Current medications and recent observations/vitals.
+Paragraph 3: Any notable concerns, flags, or follow-up recommendations.
+"""
 
 @router.post("/extract")
 def extract_prescription(input:ClinicalNoteInput, db:Session = Depends(get_db)):
@@ -153,6 +169,46 @@ def extract_and_save(input:ClinicalNoteInput, db:Session = Depends(get_db)):
     }
 }
 
+@router.post("/ai/summarize/{patient_id}")
+def summarize(patient_id:str, db:Session = Depends(get_db)):
+    patient = db.query(Patient).filter(Patient.id == patient_id ).first()
+    if patient is None:
+        raise HTTPException(status_code = 404, detail = f"No patient found with given id {patient_id} ")
+    medications = db.query(MedicationRequest).filter(patient_id == MedicationRequest.patient_id).all()
+    conditions = db.query(Condition).filter(patient_id == Condition.patient_id).all()
+    observations = db.query(Observation).filter(patient_id == Observation.patient_id).all()
+
+    context = f"""
+    Patient: {patient.family_name}, {patient.given_name}
+    Date of Birth: {patient.birth_date}
+    Gender: {patient.gender}
+
+    Active Conditions:
+    {chr(10).join([f"- {c.description} ({c.code})" for c in conditions]) or "None recorded"}
+
+    Current Medications:
+    {chr(10).join([f"- {m.medication_name} {m.dosage} {m.frequency}" for m in medications]) or "None recorded"}
+
+    Recent Observations:
+    {chr(10).join([f"- {o.code}: {o.value} {o.unit or ''}" for o in observations]) or "None recorded"}
+    """
+
+    response = client.chat.completions.create(
+        model="llama-3.3-70b-versatile",
+        messages=[
+            {"role": "system", "content": SUMMARY_PROMPT},
+            {"role": "user", "content": f"Summarize this patient's clinical data:\n{context}"}
+        ],
+        temperature=0.3
+    )
+
+    summary = response.choices[0].message.content
+
+    return {
+        "patient_id": patient_id,
+        "patient_name": f"{patient.given_name} {patient.family_name}",
+        "summary": summary
+    }
 
 
     
