@@ -1,9 +1,9 @@
 from fastapi import APIRouter, Depends, HTTPException
-from schemas import PatientResponse, PatientCreate
+from schemas import PatientResponse, PatientCreate, PatientEverything
 from database import get_db
 from sqlalchemy.orm import Session
 from typing import List
-from models import Patient
+from models import Patient, MedicationRequest, Condition, Observation
 
 router = APIRouter( prefix = "/fhir/Patient",
                 tags = ["Patient"])
@@ -52,5 +52,15 @@ def delete_patient(patient_id : str, db:Session = Depends(get_db)):
         raise HTTPException(status_code = 404, detail = f"No patient found with patient id:  {patient_id}")
     db.delete(patient_to_delete)
     db.commit()
+
+@router.get("/{patient_id}/$everything", response_model = PatientEverything)
+def return_Everything(patient_id:str, db:Session = Depends(get_db)):
+    patient = db.query(Patient).filter(patient_id == Patient.id).first()
+    if not patient:
+        raise HTTPException(status_code = 404, detail = f"No patient found with id:{patient_id}")
+    medications = db.query(MedicationRequest).filter(patient_id == MedicationRequest.patient_id).all()
+    conditions = db.query(Condition).filter(patient_id == Condition.patient_id).all()
+    observations = db.query(Observation).filter(patient_id == Observation.patient_id).all()
+    return PatientEverything(patient = patient, medications = medications, observations = observations, conditions = conditions)
 
     
