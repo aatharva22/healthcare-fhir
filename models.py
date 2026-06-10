@@ -18,7 +18,7 @@ class Observation(Base):
     code = Column(String, nullable = False )
     value = Column(String, nullable = False )
     unit = Column(String)
-    effective_date = Column(DateTime )
+    effective_date = Column(DateTime)
     status = Column(String, default = "final", nullable = False)
 
 class MedicationRequest(Base):

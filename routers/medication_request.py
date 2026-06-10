@@ -23,10 +23,14 @@ def get_medicationRequest(id:str, db: Session = Depends(get_db)):
     return requested_medicationRequest
 
 @router.get("", response_model = List[MedicationRequest_Response], status_code = 200)
-def get_all_medicationRequests(patient_id:str | None = None, skip:int = 0, limit:int = 100, db : Session = Depends(get_db)):
+def get_all_medicationRequests(patient_id:str | None = None, code:str | None = None, status:str | None = None,skip:int = 0, limit:int = 100, db : Session = Depends(get_db)):
     query = db.query(MedicationRequest)
     if patient_id:
         query = query.filter(MedicationRequest.patient_id == patient_id)
+    if code:
+        query = query.filter(MedicationRequest.code == code)
+    if status:
+        query = query.filter(MedicationRequest.status == status)
     return query.order_by(MedicationRequest.id).offset(skip).limit(limit).all()
 
 @router.put("/{id}", response_model = MedicationRequest_Response, status_code = 200)

@@ -24,10 +24,14 @@ def get_observation(observation_id:str, db: Session = Depends(get_db)):
     return requested_observation
 
 @router.get("", response_model = List[ObservationResponse], status_code = 200)
-def get_all_observations(patient_id:str | None = None,skip:int = 0, limit:int = 100, db : Session = Depends(get_db)):
+def get_all_observations(patient_id:str | None = None, code:str | None = None, status:str | None = None, skip:int = 0, limit:int = 100, db : Session = Depends(get_db)):
     query = db.query(Observation)
     if patient_id:
         query = query.filter(Observation.patient_id == patient_id)
+    if code:
+        query = query.filter(Observation.code == code)
+    if status:
+        query = query.filter(Observation.status == status)
     return query.order_by(Observation.id).offset(skip).limit(limit).all()
 
 @router.put("/{observation_id}", response_model = ObservationResponse, status_code = 200)

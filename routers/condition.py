@@ -23,10 +23,14 @@ def get_Condition(id:str, db: Session = Depends(get_db)):
     return requested_condition
 
 @router.get("", response_model = List[Condition_Create_Response], status_code = 200)
-def get_all_conditions(patient_id:str | None = None,skip:int = 0, limit:int = 100, db : Session = Depends(get_db)):
+def get_all_conditions(patient_id:str | None = None,code:str | None = None, status:str | None = None, skip:int = 0, limit:int = 100, db : Session = Depends(get_db)):
     query = db.query(Condition)
     if patient_id:
         query = query.filter(Condition.patient_id == patient_id)
+    if code:
+        query = query.filter(Condition.code == code)
+    if status:
+        query = query.filter(Condition.status == status)
     return query.order_by(Condition.id).offset(skip).limit(limit).all()
 
 @router.put("/{id}", response_model = Condition_Create_Response, status_code = 200)

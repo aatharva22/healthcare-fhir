@@ -98,3 +98,7 @@ class PatientEverything(BaseModel):
     observations: List[ObservationResponse]
     medications: List[MedicationRequest_Response]
     conditions: List[Condition_Create_Response]
+
+class ClinicalNoteInput(BaseModel):
+    note: str
+    patient_id: str
