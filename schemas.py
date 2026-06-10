@@ -1,6 +1,7 @@
 from pydantic import BaseModel
 from typing import Optional
 from datetime import date, datetime
+from typing import List
 
 class PatientCreate(BaseModel):
     family_name:str
@@ -66,7 +67,7 @@ class MedicationRequest_Response(BaseModel):
     notes:str
 
     class Config:
-        from_attribute = True
+        from_attributes = True
 
 
 class Condition_Create(BaseModel):
@@ -88,4 +89,12 @@ class Condition_Create_Response(BaseModel):
     notes:str
 
     class Config:
-        from_attribute = True
+        from_attributes = True
+
+class PatientEverything(BaseModel):
+    resourceType: str = "Bundle"
+    type: str = "searchset"
+    patient: PatientResponse
+    observations: List[ObservationResponse]
+    medications: List[MedicationRequest_Response]
+    conditions: List[Condition_Create_Response]
