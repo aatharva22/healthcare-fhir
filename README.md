@@ -38,5 +38,5 @@ API design.
 
 ## Status
 
-Week 1 and 2 complete. Week 3 in progress — JWT authentication, 
+In progress — JWT authentication, 
 role-based access control, HIPAA audit logging, Docker Compose, and AWS deployment.
