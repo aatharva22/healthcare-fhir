@@ -1,14 +1,15 @@
 from fastapi import APIRouter, Depends, HTTPException
 from schemas import MedicationRequest_Create, MedicationRequest_Response
-from models import MedicationRequest
+from models import MedicationRequest, User
 from sqlalchemy.orm import Session
 from database import get_db
 from typing import List
+from auth import get_current_user
 
 router = APIRouter(prefix = "/fhir/MedicationRequest", tags = ["MedicationRequest"])
 
 @router.post("", response_model = MedicationRequest_Response, status_code = 201 )
-def create_medicationRequest(medicationRquest:MedicationRequest_Create, db : Session = Depends(get_db)):
+def create_medicationRequest(medicationRquest:MedicationRequest_Create, db : Session = Depends(get_db), current_user:User = Depends(get_current_user)):
     new_medicationRequest = MedicationRequest( ** medicationRquest.model_dump())
     db.add(new_medicationRequest)
     db.commit()
@@ -16,14 +17,14 @@ def create_medicationRequest(medicationRquest:MedicationRequest_Create, db : Ses
     return new_medicationRequest
 
 @router.get("/{id}", response_model = MedicationRequest_Response, status_code = 200 )
-def get_medicationRequest(id:str, db: Session = Depends(get_db)):
+def get_medicationRequest(id:str, db: Session = Depends(get_db),current_user:User = Depends(get_current_user)):
     requested_medicationRequest = db.query(MedicationRequest).filter(MedicationRequest.id == id).first()
     if requested_medicationRequest is None:
         raise HTTPException(status_code = 404, detail = f"No medication request recorded with given id {id}")
     return requested_medicationRequest
 
 @router.get("", response_model = List[MedicationRequest_Response], status_code = 200)
-def get_all_medicationRequests(patient_id:str | None = None, code:str | None = None, status:str | None = None,skip:int = 0, limit:int = 100, db : Session = Depends(get_db)):
+def get_all_medicationRequests(patient_id:str | None = None, code:str | None = None, status:str | None = None,skip:int = 0, limit:int = 100, db : Session = Depends(get_db), current_user:User = Depends(get_current_user)):
     query = db.query(MedicationRequest)
     if patient_id:
         query = query.filter(MedicationRequest.patient_id == patient_id)
@@ -34,7 +35,7 @@ def get_all_medicationRequests(patient_id:str | None = None, code:str | None = N
     return query.order_by(MedicationRequest.id).offset(skip).limit(limit).all()
 
 @router.put("/{id}", response_model = MedicationRequest_Response, status_code = 200)
-def update_medicationRequest(id:str, medicationRequest:MedicationRequest_Create, db:Session = Depends(get_db)):
+def update_medicationRequest(id:str, medicationRequest:MedicationRequest_Create, db:Session = Depends(get_db), current_user:User = Depends(get_current_user)):
     medicationRequest_to_update = db.query(MedicationRequest).filter(MedicationRequest.id == id).first()
     if medicationRequest_to_update is None:
         raise HTTPException(status_code = 404, detail = f"No medication request recorded with given id {id}")
@@ -46,7 +47,7 @@ def update_medicationRequest(id:str, medicationRequest:MedicationRequest_Create,
     return medicationRequest_to_update
 
 @router.delete("/{id}", status_code = 204)
-def delete_medicationRequest(id:str, db:Session = Depends(get_db)):
+def delete_medicationRequest(id:str, db:Session = Depends(get_db), current_user:User = Depends(get_current_user)):
     medicationRequest_to_delete = db.query(MedicationRequest).filter(MedicationRequest.id == id).first()
     if medicationRequest_to_delete is None:
         raise HTTPException(status_code = 404, detail = f"No medication request recorded with given id: {id}")

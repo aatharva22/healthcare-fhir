@@ -107,3 +107,26 @@ class SummaryResponse(BaseModel):
     patient_id: str
     patient_name: str
     summary: str
+
+class UserCreate(BaseModel):
+    email: str
+    password: str
+    full_name: str | None = None
+    role: str = "doctor"
+
+class UserResponse(BaseModel):
+    id: str
+    email: str
+    full_name: str | None = None
+    role: str
+    is_active: bool
+
+    class Config:
+        from_attributes = True
+
+class Token(BaseModel):
+    access_token: str
+    token_type: str = "bearer"
+
+class TokenData(BaseModel):
+    email: str | None = None

@@ -1,8 +1,11 @@
-from fastapi import APIRouter
+from fastapi import APIRouter, Depends
+from models import User
+from auth import get_current_user
+
 
 router = APIRouter(tags = ["Metadata"])
 @router.get("/metadata")
-def get_capability_statement():
+def get_capability_statement(current_user:User = Depends(get_current_user)):
     return {
         "resourceType": "CapabilityStatement",
         "status": "active",
