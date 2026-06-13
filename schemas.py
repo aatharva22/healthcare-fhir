@@ -130,3 +130,17 @@ class Token(BaseModel):
 
 class TokenData(BaseModel):
     email: str | None = None
+
+class AuditLogResponse(BaseModel):
+    id: str
+    user_email: str | None = None
+    user_role: str | None = None
+    action: str
+    method: str
+    path: str
+    status_code: int
+    ip_address: str | None = None
+    timestamp: datetime
+
+    class Config:
+        from_attributes = True

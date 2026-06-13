@@ -1,0 +1,29 @@
+
+
+services:
+  db:
+    image: postgres:16
+    container_name: healthcare-postgres-compose
+    environment:
+      POSTGRES_USER: postgres
+      POSTGRES_PASSWORD: ${POSTGRES_PASSWORD:-mypassword}
+      POSTGRES_DB: healthcare_fhir
+    ports:
+      - "5434:5432"
+    volumes:
+      - postgres_data:/var/lib/postgresql/data
+
+  app:
+    build: .
+    container_name: healthcare-app
+    ports:
+      - "8000:8000"
+    environment:
+      DATABASE_URL: postgresql+psycopg2://postgres:${POSTGRES_PASSWORD:-mypassword}@db:5432/healthcare_fhir
+      SECRET_KEY: ${SECRET_KEY}
+      GROQ_API_KEY: ${GROQ_API_KEY}
+    depends_on:
+      - db
+
+volumes:
+  postgres_data:

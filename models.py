@@ -1,11 +1,13 @@
 import uuid
-from sqlalchemy import Column, String, Boolean, Date, DateTime, ForeignKey
+from sqlalchemy import Column, String, Boolean, Date, DateTime, ForeignKey, Integer
 from database import Base
+from sqlalchemy.sql import func
 
 class Patient(Base):
     __tablename__ = "patients"
     id = Column(String, primary_key = True, default = lambda: str(uuid.uuid4()))
     family_name= Column(String, nullable = False)
+    user_id = Column(String, ForeignKey("users.id"), nullable=True)
     given_name = Column(String,nullable = False)
     gender= Column(String)
     birth_date = Column(Date)
@@ -42,7 +44,7 @@ class Condition(Base):
     onset_date = Column(DateTime)
     notes = Column(String)
 
-from sqlalchemy.sql import func
+
 
 class User(Base):
     __tablename__ = "users"
@@ -53,3 +55,15 @@ class User(Base):
     full_name = Column(String)
     is_active = Column(Boolean, default=True, nullable=False)
     created_at = Column(DateTime, server_default=func.now())
+
+class AuditLog(Base):
+    __tablename__ = "audit_logs"
+    id = Column(String, primary_key=True, default=lambda: str(uuid.uuid4()))
+    user_email = Column(String, nullable=True)
+    user_role = Column(String, nullable=True)
+    action = Column(String, nullable=False)
+    method = Column(String, nullable=False)
+    path = Column(String, nullable=False)
+    status_code = Column(Integer, nullable=False)
+    ip_address = Column(String)
+    timestamp = Column(DateTime, server_default=func.now())

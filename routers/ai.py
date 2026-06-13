@@ -8,7 +8,8 @@ from dotenv import load_dotenv
 from schemas import ClinicalNoteInput
 from models import Patient, Observation, Condition, MedicationRequest, User
 from datetime import datetime
-from auth import get_current_user
+from auth import get_current_user, require_role
+
 
 load_dotenv()
 
@@ -66,7 +67,7 @@ Paragraph 3: Any notable concerns, flags, or follow-up recommendations.
 """
 
 @router.post("/extract")
-def extract_prescription(input:ClinicalNoteInput, db:Session = Depends(get_db), current_user:User = Depends(get_current_user)):
+def extract_prescription(input:ClinicalNoteInput, db:Session = Depends(get_db), current_user:User = Depends(require_role(["doctor", "admin"]))):
     patient = db.query(Patient).filter(Patient.id == input.patient_id ).first()
     if patient is None:
         raise HTTPException(status_code = 404, detail = f"No patient found with given id {input.id} assosiated with the input")
@@ -98,7 +99,7 @@ def extract_prescription(input:ClinicalNoteInput, db:Session = Depends(get_db), 
 
 
 @router.post("/extract-and-save")
-def extract_and_save(input:ClinicalNoteInput, db:Session = Depends(get_db), current_user:User = Depends(get_current_user)):
+def extract_and_save(input:ClinicalNoteInput, db:Session = Depends(get_db), current_user:User = Depends(require_role(["doctor", "admin"]))):
     patient = db.query(Patient).filter(Patient.id == input.patient_id ).first()
     if patient is None:
         raise HTTPException(status_code = 404, detail = f"No patient found with given id {input.id} assosiated with the input")
@@ -171,7 +172,7 @@ def extract_and_save(input:ClinicalNoteInput, db:Session = Depends(get_db), curr
 }
 
 @router.post("/ai/summarize/{patient_id}")
-def summarize(patient_id:str, db:Session = Depends(get_db)):
+def summarize(patient_id:str, db:Session = Depends(get_db), current_User:User = Depends(require_role(["doctor", "admin"]))):
     patient = db.query(Patient).filter(Patient.id == patient_id ).first()
     if patient is None:
         raise HTTPException(status_code = 404, detail = f"No patient found with given id {patient_id} ")
