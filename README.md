@@ -98,5 +98,6 @@ The AI will extract this into a FHIR Observation (blood pressure), MedicationReq
 - Groq API (Llama 3.3 70B)
 - python-dotenv
 - Docker
+- JWT
 
 
