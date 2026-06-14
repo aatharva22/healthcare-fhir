@@ -105,30 +105,32 @@ The AI will extract this into a FHIR Observation (blood pressure), MedicationReq
 ### Full API Surface
 The Swagger UI exposes every endpoint, grouped by FHIR resource and feature area. All endpoints (except registration and login) require authentication.
 
-![API Surface](docs/screenshots/all-endpoints.png)
+![API Surface](docs/screenshots/all-end-points.png)
 
 ### AI Endpoints
 Three AI-powered endpoints handle clinical documentation: free-text note extraction, automatic database persistence, and patient summarization.
 
-![AI Endpoints](docs/screenshots/ai-endpoints.png)
+![AI Endpoints](docs/screenshots/AI-endpoints.png)
 
 ### AI Clinical Note Extraction — Input
 A physician types a casual note. Abbreviations, vague phrasing, and missing structure are intentional.
 
-![AI Extract Request](docs/screenshots/ai-extract-request.png)
+![AI Extract Request](docs/screenshots/AI-extract-1.png)
 
 ### AI Clinical Note Extraction — Output
 The same note returned as fully structured, FHIR-compliant resources. The model correctly identifies vitals (blood pressure), medications (Lisinopril 10mg once daily), and conditions (essential hypertension with ICD-10 code I10).
 
-![AI Extract Response](docs/screenshots/ai-extract-response.png)
+![AI Extract Response](docs/screenshots/AI-extract-response.png)
 
 ### AI Patient Summary
 Given a patient ID, the API aggregates all observations, medications, and conditions, then generates a professional clinical narrative using Llama 3.3 70B.
 
-![AI Summary](docs/screenshots/ai-summary.png)
+![AI Summary](docs/screenshots/AI-Summary-for-patient.png)
 
 ### HIPAA Audit Logging
 Every request that touches protected health information is logged via middleware. Each entry records the user, role, action, endpoint, status code, IP address, and timestamp.
+
+![Audit Logs](docs/screenshots/Audit-logging.png)
 
 ![Audit Logs](docs/screenshots/audit-logging.png)
 
