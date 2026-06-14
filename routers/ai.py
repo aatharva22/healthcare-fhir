@@ -171,7 +171,7 @@ def extract_and_save(input:ClinicalNoteInput, db:Session = Depends(get_db), curr
     }
 }
 
-@router.post("/ai/summarize/{patient_id}")
+@router.post("/summarize/{patient_id}")
 def summarize(patient_id:str, db:Session = Depends(get_db), current_User:User = Depends(require_role(["doctor", "admin"]))):
     patient = db.query(Patient).filter(Patient.id == patient_id ).first()
     if patient is None:
