@@ -30,7 +30,7 @@ class ObservationCreate(BaseModel):
     value :str
     unit :Optional[str] = None
     effective_date:Optional[datetime] = None
-    status :str = "final"
+    status : Literal["final", "preliminary", "amended"]
 
 class ObservationResponse(BaseModel):
     id :str
@@ -39,7 +39,7 @@ class ObservationResponse(BaseModel):
     value :str
     unit :Optional[str] = None
     effective_date:Optional[datetime] = None
-    status :str = "final"
+    status :Literal["final", "preliminary", "amended"]
 
     class Config:
         from_attributes = True
@@ -52,7 +52,7 @@ class MedicationRequest_Create(BaseModel):
     medication_name:str
     dosage:str
     frequency:str
-    status:str = "active"
+    status:Literal["active", "stopped", "completed"]
     prescribed_date:datetime
     notes:str
 
@@ -62,7 +62,7 @@ class MedicationRequest_Response(BaseModel):
     medication_name:str
     dosage:str
     frequency:str
-    status:str = "active"
+    status:Literal["active", "stopped", "completed"]
     prescribed_date:datetime
     notes:Optional[str] = None
 
@@ -75,7 +75,7 @@ class Condition_Create(BaseModel):
     patient_id:str
     code:str
     description:str
-    clinical_status:str = "active"
+    clinical_status:Literal["active", "inactive", "resolved"]
     onset_date:datetime
     notes:str
 
@@ -84,7 +84,7 @@ class Condition_Create_Response(BaseModel):
     patient_id:str
     code:str
     description:str
-    clinical_status:str = "active"
+    clinical_status:Literal["active", "inactive", "resolved"]
     onset_date:datetime
     notes:Optional[str] = None
 
@@ -112,7 +112,7 @@ class UserCreate(BaseModel):
     email: str
     password: str
     full_name: str | None = None
-    role: str = "doctor"
+    role: Literal["admin", "doctor", "patient"] = "doctor"
 
 class UserResponse(BaseModel):
     id: str

@@ -1,9 +1,20 @@
 from fastapi import FastAPI
 from audit import AuditLogMiddleware
 from routers import patient, observation, medication_request, condition, metadata, ai, auth, audit_log
+from fastapi.middleware.cors import CORSMiddleware
 
 app = FastAPI()
+app.add_middleware(
+    CORSMiddleware,
+    allow_origins=["http://localhost:3000", "https://your-frontend-url.vercel.app"],
+    allow_credentials=True,
+    allow_methods=["*"],
+    allow_headers=["*"],
+)
+
+
 app.add_middleware(AuditLogMiddleware)
+
 
 app.include_router(audit_log.router)
 app.include_router(patient.router)
